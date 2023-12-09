@@ -12,36 +12,16 @@ fn main() {
         usize::MIN,
         usize::MIN > 0
     );
-
-    //check_ownership();
-}
-
-pub fn take_ownership_01(s: String) {
-    println!("{}", s);
 }
 
 pub fn take_ownership_02(s: &String) {
     println!("{}", s);
 }
 
-pub fn fn_01(words: Vec<String>) -> Vec<String> {
-    let mut tmp = words;
-    let s = String::from("hello");
-    tmp.push(s);
-    tmp
-}
-
-pub fn fn_02(mut words: Vec<String>) -> Vec<String> {
-    let s = String::from("hello");
-    words.push(s);
-    words
-}
-
-pub fn fn_03(words: &mut Vec<String>) -> &mut Vec<String> {
-    let tmp = words;
-    let s = String::from("hello");
-    tmp.push(s);
-    tmp
+pub fn check_ownership_02() -> u32 {
+    let x = 5u32;
+    println!("y == {}", x);
+    5u32
 }
 
 pub fn check_ownership_01() -> u32 {
@@ -55,19 +35,61 @@ pub fn check_ownership_01() -> u32 {
     y
 }
 
-pub fn check_ownership_02() -> u32 {
-    let x = 5u32;
-    println!("y == {}", x);
-    5u32
+pub fn fn_03(words: &mut Vec<String>) -> &mut Vec<String> {
+    let tmp = words;
+    let s = String::from("hello");
+    tmp.push(s);
+    tmp
+}
+
+pub fn fn_02(mut words: Vec<String>) -> Vec<String> {
+    let s = String::from("hello");
+    words.push(s);
+    words
+}
+
+pub fn fn_01(words: Vec<String>) -> Vec<String> {
+    let mut tmp = words;
+    let s = String::from("hello");
+    tmp.push(s);
+    tmp
 }
 
 pub fn check_usize_max(max: u64) -> (u64, bool) {
     (max, max > 0)
 }
 
+pub fn take_ownership_01(s: String) {
+    println!("{}", s);
+}
+
+pub fn check_borrowship(v: &mut Vec<u8>) {
+    v.push(2);
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_check_borrowship_02() {
+        let mut v = vec![0, 1];
+        let v1 = &mut v;
+        //let v2 = &v;
+        /*
+         * v2 cannot borrow here, because v1 has already borrowed as mutable. If a mutable
+         * borrow exists, no other borrows allowed.
+         */
+        v1.push(2);
+        assert_eq!(v, vec![0, 1, 2]);
+    }
+
+    #[test]
+    fn test_check_borrowship_01() {
+        let mut v = vec![0, 1];
+        check_borrowship(&mut v);
+        assert_eq!(v, vec![0, 1, 2]);
+    }
 
     #[test]
     fn test_take_ownership_01() {
@@ -111,7 +133,6 @@ mod tests {
         }
         assert_eq!(words.len(), 10);
     }
-
 
     #[test]
     fn test_check_ownership_01() {
